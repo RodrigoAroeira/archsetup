@@ -11,7 +11,7 @@ function install_essentials() {
   local essentials=(git stow base-devel cmake zsh nvim)
   echo "Essentials: ${essentials[@]}"
 
-  sudo pacman -S --needed "${essentials[*]}"
+  sudo pacman -S --needed "${essentials[@]}"
 }
 
 function install_dotfiles() {
