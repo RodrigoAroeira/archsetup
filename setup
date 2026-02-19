@@ -41,23 +41,24 @@ function bs_install_yay() {
   )
 }
 
-fns=()
-case "${1:-all}" in
-essentials) fns+=(bs_install_essentials) ;;
-dotfiles) fns+=(bs_install_dotfiles) ;;
-yay) fns+=(bs_install_yay) ;;
-all)
-  fns=($(declare -F | awk '{print $3}' | grep '^bs_'))
-  ;;
-*)
+selection="$1"
+options=($(declare -F | awk '{print $3}' | grep '^bs_install_' | sed 's/^bs_install_//'))
+
+if [[ "$selection" != "all" ]] && ! [[ " ${options}[*] " =~ " $selection " ]]; then
   (
-    echo "Unknown option $1"
-    echo "Usage: $0 [essentials|dotfiles|all]"
+    echo "Unknown option: $selection"
+    formatted=$(echo "${options[*]}" | sed 's/ /\|/g')
+    echo "Usage: $0 [$formatted|all]"
   ) >&2
   exit 1
-  ;;
-esac
+fi
 
-for fn in ${fns[@]}; do
+if [[ "$selection" == "all" ]]; then
+  fns=($(declare -F | awk '{print $3}' | grep '^bs_install_'))
+else
+  fns=("bs_install_$selection")
+fi
+
+for fn in "${fns[@]}"; do
   run_step "$fn"
 done
