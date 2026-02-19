@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+function run_step() {
+  local fn="$1"
+  "$fn" || echo "$fn failed"
+}
+
+github="https://github.com"
+
+function install_essentials() {
+  local essentials=(git stow base-devel cmake zsh nvim)
+  echo "Essentials: ${essentials[@]}"
+
+  sudo pacman -S --needed "${essentials[*]}"
+}
+
+function install_dotfiles() {
+  local repo="$github/RodrigoAroeira/.dotfiles"
+  (
+    cd || exit 1
+    if [ -d ".dotfiles" ]; then
+      echo "Dotfiles already installed, skipping..."
+      exit 1
+    fi
+    git clone "$repo" --recurse-submodules || exit 1
+    cd .dotfiles
+    stow . --adopt
+    git restore .
+  )
+}
+
+case "${1:-all}" in
+essentials) run_step install_essentials ;;
+dotfiles) run_step install_dotfiles ;;
+all)
+  run_step install_essentials
+  run_step install_dotfiles
+  ;;
+esac
