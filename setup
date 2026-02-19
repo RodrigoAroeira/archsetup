@@ -29,10 +29,23 @@ function bs_install_dotfiles() {
   )
 }
 
+function bs_install_yay() {
+  local repo="https://aur.archlinux.org/yay.git"
+  (
+    cd /tmp
+    git clone "$repo"
+    cd yay
+    makepkg -sir
+    cd ..
+    rm -rf yay
+  )
+}
+
 fns=()
 case "${1:-all}" in
 essentials) fns+=(bs_install_essentials) ;;
 dotfiles) fns+=(bs_install_dotfiles) ;;
+yay) fns+=(bs_install_yay) ;;
 all)
   fns=($(declare -F | awk '{print $3}' | grep '^bs_'))
   ;;
