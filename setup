@@ -7,14 +7,14 @@ function run_step() {
 
 github="https://github.com"
 
-function install_essentials() {
+function bs_install_essentials() {
   local essentials=(git stow base-devel cmake zsh nvim)
   echo "Essentials: ${essentials[@]}"
 
   sudo pacman -S --needed "${essentials[@]}"
 }
 
-function install_dotfiles() {
+function bs_install_dotfiles() {
   local repo="$github/RodrigoAroeira/.dotfiles"
   (
     cd || exit 1
@@ -29,11 +29,22 @@ function install_dotfiles() {
   )
 }
 
+fns=()
 case "${1:-all}" in
-essentials) run_step install_essentials ;;
-dotfiles) run_step install_dotfiles ;;
+essentials) fns+=(bs_install_essentials) ;;
+dotfiles) fns+=(bs_install_dotfiles) ;;
 all)
-  run_step install_essentials
-  run_step install_dotfiles
+  fns=($(declare -F | awk '{print $3}' | grep '^bs_'))
+  ;;
+*)
+  (
+    echo "Unknown option $1"
+    echo "Usage: $0 [essentials|dotfiles|all]"
+  ) >&2
+  exit 1
   ;;
 esac
+
+for fn in ${fns[@]}; do
+  run_step "$fn"
+done
