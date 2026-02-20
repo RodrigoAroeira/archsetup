@@ -44,7 +44,7 @@ function bs_install_yay() {
 selection="$1"
 options=($(declare -F | awk '{print $3}' | grep '^bs_install_' | sed 's/^bs_install_//'))
 
-if [[ "$selection" != "all" ]] && ! [[ " ${options}[*] " =~ " $selection " ]]; then
+if [[ "$selection" != "all" ]] && ! [[ " ${options[*]} " =~ " $selection " ]]; then
   (
     echo "Unknown option: $selection"
     formatted=$(echo "${options[*]}" | sed 's/ /\|/g')
