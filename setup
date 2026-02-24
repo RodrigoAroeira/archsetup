@@ -41,6 +41,12 @@ function bs_install_yay() {
   )
 }
 
+function bs_install_omz() {
+  (
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  )
+}
+
 selection="$1"
 options=($(declare -F | awk '{print $3}' | grep '^bs_install_' | sed 's/^bs_install_//'))
 
